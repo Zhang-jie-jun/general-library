@@ -1,0 +1,104 @@
+;/*++
+;
+;Copyright 2008-2017 VMware, Inc.  All rights reserved.
+;
+;Module Name:
+;
+;    VSTOR2.INF
+;
+;Abstract:
+;    INF file for installing virtual storage
+;
+;--*/
+
+[Version]
+Signature = "$Windows NT$"
+Class     = System
+ClassGuid = {4D36E97D-E325-11CE-BFC1-08002BE10318}
+Provider=%VMWARE%
+
+DriverVer = 07/21/2017, 6.1.2
+CatalogFile=vstor2.cat
+
+;
+; General installation section
+;
+
+[DefaultInstall.NTx86]
+CopyFiles = vstor2.AddFile.NTx86
+
+[DefaultInstall.NTamd64]
+CopyFiles = vstor2.AddFile.NTamd64
+
+[DestinationDirs]
+DefaultDestDir = 12  ; DIRID_DRIVERS
+
+[vstor2.AddFile.NTx86]
+vstor2-x86.sys,vstor2-x86.sys,0x00000006 ; NOSKIP+NOVERSIONCHECK
+
+[vstor2.AddFile.NTamd64]
+vstor2-x64.sys,vstor2-x64.sys,0x00000006 ; NOSKIP+NOVERSIONCHECK
+
+;
+; Service installation section
+;
+
+[DefaultInstall.NTx86.Services]
+AddService = vstor2-mntapi20-shared, 0x800, vstor2.Service.NTx86.Install   ; SPSVCSINST_STARTSERVICE
+
+[DefaultInstall.NTamd64.Services]
+AddService = vstor2-mntapi20-shared, 0x800, vstor2.Service.NTamd64.Install ; SPSVCSINST_STARTSERVICE
+
+[vstor2.Service.NTx86.Install]
+DisplayName    = %service_desc%
+ServiceType    = 1   ; SERVICE_KERNEL_DRIVER
+StartType      = 2   ; SERVICE_AUTO_START
+ErrorControl   = 1   ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\vstor2-x86.sys
+
+[vstor2.Service.NTamd64.Install]
+DisplayName    = %service_desc%
+ServiceType    = 1   ; SERVICE_KERNEL_DRIVER
+StartType      = 2   ; SERVICE_AUTO_START
+ErrorControl   = 1   ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\vstor2-x64.sys
+
+[SourceDisksFiles]
+vstor2-x86.sys=1
+vstor2-x64.sys=1
+
+; WinXP and later
+
+[SourceDisksNames]
+1 = %diskid1%,,,
+
+;
+; General uninstallation section
+;
+
+[DefaultUnInstall.NTx86]
+DelFiles = FilesToDelete
+
+[DefaultUnInstall.NTx86.Services]
+DelService = vstor2-mntapi20-shared,0x200  ; SPSVCINST_STOPSERVICE
+
+[DefaultUnInstall.NTamd64]
+DelFiles = FilesToDelete
+
+[DefaultUnInstall.NTamd64.Services]
+DelService = vstor2-mntapi20-shared,0x200  ; SPSVCINST_STOPSERVICE
+
+[FilesToDelete]
+vstor2-x86.sys
+vstor2-x64.sys
+
+;
+; Localizable Strings
+;
+
+[Strings]
+
+VMWARE = "VMware"
+service_desc = ""Vstor2 MntApi 2.0 Driver (shared)""
+diskid1      = "Virtual Storage Installation Disk #1 (vstor2)"
+
